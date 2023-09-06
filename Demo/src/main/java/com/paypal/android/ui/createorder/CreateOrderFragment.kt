@@ -102,6 +102,9 @@ class CreateOrderFragment : Fragment() {
                         )
                     )
                 }
+                Feature.PAYPAL_MESSAGING -> {
+                    // TODO: remove this enum
+                }
             }
         }
     }

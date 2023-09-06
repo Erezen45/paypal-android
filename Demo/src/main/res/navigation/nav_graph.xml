@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_paymentMethodsFragment_to_selectCardFragment"
             app:destination="@id/selectCardFragment" />
+        <action
+            android:id="@+id/action_paymentMethodsFragment_to_payPalMessagingFragment"
+            app:destination="@id/payPalMessagingFragment" />
     </fragment>
     <fragment
         android:id="@+id/cardFragment"
@@ -147,4 +150,8 @@
                 app:nullable="false" />
         </action>
     </fragment>
+    <fragment
+        android:id="@+id/payPalMessagingFragment"
+        android:name="com.paypal.android.ui.paypalmessaging.PayPalMessagingFragment"
+        android:label="PayPalMessagingFragment" />
 </navigation>
