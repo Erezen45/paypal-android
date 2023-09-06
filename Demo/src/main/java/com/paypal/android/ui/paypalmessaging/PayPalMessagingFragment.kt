@@ -1,62 +1,112 @@
 package com.paypal.android.ui.paypalmessaging
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.fragment.app.Fragment
-import com.paypal.android.api.services.SDKSampleServerAPI
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.paypal.messages.PayPalMessageView
+import com.paypal.messages.config.PayPalMessageColor
+import com.paypal.messages.config.PayPalMessageLogoType
+import com.paypal.messages.config.message.PayPalMessageConfig
+import com.paypal.messages.config.message.PayPalMessageData
+import com.paypal.messages.config.message.PayPalMessageViewState
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class PayPalMessagingFragment : Fragment() {
 
-    @Inject
-    lateinit var sdkSampleServerAPI: SDKSampleServerAPI
+    private val viewModel by viewModels<PayPalMessagingViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ) = ComposeView(requireContext()).apply {
+        viewModel.fetchClientId()
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             MaterialTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    PayPalMessagingView()
+                    val clientId by viewModel.clientId.collectAsStateWithLifecycle()
+                    PayPalMessagingView(clientId)
                 }
             }
         }
     }
 
     @Composable
-    fun PayPalMessagingView() {
+    fun PayPalMessagingView(clientId: String) {
         Column(
             modifier = Modifier
                 .padding(16.dp)
+                .fillMaxSize()
         ) {
-            Text("Bonjour!")
+            Box(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                if (clientId.isNotEmpty()) {
+                    val config = PayPalMessageConfig()
+                    config.setGlobalAnalytics("", "")
+                    config.data = PayPalMessageData(clientId = clientId)
+
+                    // Ref: https://developer.android.com/jetpack/compose/migrate/interoperability-apis/views-in-compose#androidview_in_lazy_lists
+                    AndroidView(
+                        factory = { context ->
+                            val messageView = PayPalMessageView(context, config = config)
+                            messageView.layoutParams = ViewGroup.LayoutParams(
+                                ViewGroup.LayoutParams.MATCH_PARENT,
+                                ViewGroup.LayoutParams.MATCH_PARENT
+                            )
+
+                            // NOTE: Kotlin getters / setters would be preferable to Java style getters / setters
+                            messageView.setLogoType(PayPalMessageLogoType.ALTERNATIVE)
+                            messageView.setColor(PayPalMessageColor.MONOCHROME)
+                            messageView.setViewStates(
+                                PayPalMessageViewState(
+                                    onLoading = {
+                                        Log.d("TAG", "onLoading")
+                                    },
+                                    onError = {
+                                        Log.d("TAG", "onError")
+                                    },
+                                    onSuccess = {
+                                        Log.d("TAG", "onSuccess")
+                                    }
+                                )
+                            )
+                            messageView
+                        }
+                    )
+                }
+            }
         }
     }
 
     @Preview
     @Composable
     fun PayPalMessagingViewPreview() {
+        val config = PayPalMessageConfig()
+        config.setGlobalAnalytics("", "")
         MaterialTheme {
             Surface(modifier = Modifier.fillMaxSize()) {
-                PayPalMessagingView()
+                PayPalMessagingView("")
             }
         }
     }
