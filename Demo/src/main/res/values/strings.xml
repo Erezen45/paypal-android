@@ -58,4 +58,5 @@
     <string name="something_went_wrong">Oops! Something went wrong</string>
     <string name="order_created">Order Created</string>
     <string name="checkout_cancelled_by_user">Checkout cancelled by user</string>
+    <string name="pay_pal_message_text">Hello from TextView</string>
 </resources>

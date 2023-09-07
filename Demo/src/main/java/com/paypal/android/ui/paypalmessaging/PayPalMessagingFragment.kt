@@ -1,12 +1,12 @@
 package com.paypal.android.ui.paypalmessaging
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -21,12 +21,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.paypal.messages.PayPalMessageView
-import com.paypal.messages.config.PayPalMessageColor
-import com.paypal.messages.config.PayPalMessageLogoType
 import com.paypal.messages.config.message.PayPalMessageConfig
 import com.paypal.messages.config.message.PayPalMessageData
-import com.paypal.messages.config.message.PayPalMessageViewState
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -56,10 +52,10 @@ class PayPalMessagingFragment : Fragment() {
         Column(
             modifier = Modifier
                 .padding(16.dp)
-                .fillMaxSize()
+                .fillMaxWidth()
         ) {
             Box(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxWidth()
             ) {
                 if (clientId.isNotEmpty()) {
                     val config = PayPalMessageConfig()
@@ -69,28 +65,28 @@ class PayPalMessagingFragment : Fragment() {
                     // Ref: https://developer.android.com/jetpack/compose/migrate/interoperability-apis/views-in-compose#androidview_in_lazy_lists
                     AndroidView(
                         factory = { context ->
-                            val messageView = PayPalMessageView(context, config = config)
-                            messageView.layoutParams = ViewGroup.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.MATCH_PARENT
-                            )
+                            val messageView = PayPalMessagingContainerView(context)
+//                            messageView.layoutParams = ViewGroup.LayoutParams(
+//                                ViewGroup.LayoutParams.MATCH_PARENT,
+//                                ViewGroup.LayoutParams.WRAP_CONTENT
+//                            )
 
-                            // NOTE: Kotlin getters / setters would be preferable to Java style getters / setters
-                            messageView.setLogoType(PayPalMessageLogoType.ALTERNATIVE)
-                            messageView.setColor(PayPalMessageColor.MONOCHROME)
-                            messageView.setViewStates(
-                                PayPalMessageViewState(
-                                    onLoading = {
-                                        Log.d("TAG", "onLoading")
-                                    },
-                                    onError = {
-                                        Log.d("TAG", "onError")
-                                    },
-                                    onSuccess = {
-                                        Log.d("TAG", "onSuccess")
-                                    }
-                                )
-                            )
+//                            // NOTE: Kotlin getters / setters would be preferable to Java style getters / setters
+//                            messageView.setLogoType(PayPalMessageLogoType.ALTERNATIVE)
+//                            messageView.setColor(PayPalMessageColor.MONOCHROME)
+//                            messageView.setViewStates(
+//                                PayPalMessageViewState(
+//                                    onLoading = {
+//                                        Log.d("TAG", "onLoading")
+//                                    },
+//                                    onError = {
+//                                        Log.d("TAG", "onError")
+//                                    },
+//                                    onSuccess = {
+//                                        Log.d("TAG", "onSuccess")
+//                                    }
+//                                )
+//                            )
                             messageView
                         }
                     )
